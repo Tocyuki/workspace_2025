@@ -1,4 +1,18 @@
 // filename: hello.sentinel
+# ポリシーファイルの外部から受け取り可能な変数を宣言する
+param message
+print(message + ", hiro")
+
+# ローカルスコープで利用可能な変数を定義し、値を格納する
+greet = "hello"
+
+# rule で評価式を定義: 受け取った message の値と greet の値（="hello"）とが一致するかを評価
+rule_1 = rule {
+  message == greet
+}
+
+# rule ブロックは一つの policy ファイル（*.sentiel）内に複数定義できる
+# AND や OR で評価可能なように、main rule に最終的にまとめるケースが多い
 main = rule {
-	false
+  rule_1 is true
 }
