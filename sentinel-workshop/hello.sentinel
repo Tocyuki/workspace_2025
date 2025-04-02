@@ -1,0 +1,4 @@
+// filename: hello.sentinel
+main = rule {
+	false
+}
