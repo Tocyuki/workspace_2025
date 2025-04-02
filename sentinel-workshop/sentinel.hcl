@@ -15,3 +15,10 @@ import "static" "allowed_list" {
   source = "./imports/allowed_host_list.json"
   format = "json"
 }
+
+// time プラグインは、デフォルトで UTC を表示する（これを JST にオーバライドする例）
+import "plugin" "time" {
+  config = {
+    "timezone": "Asia/Tokyo"
+  }
+}
