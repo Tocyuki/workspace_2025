@@ -1,19 +1,29 @@
-// 利用するものを宣言
+# sentinel.hcl で指定した識別子で import する
+import "allowed_list"
 import "http"
 import "json"
 
-// standard imports を利用して外部 API を呼び出し、そのデータを変数 resp に格納する
-resp = http.get("https://httpbin.org/get")
+# import したデータに対して key を指定して変数に格納
+allowed_hosts = allowed_list.hosts
+print(allowed_hosts)
 
-// JSON（Sentinel 内では Map）として扱うことができるようにマーシャリング処理を行う
+# フィールドを指定して loop を回してみる
+for allowed_hosts as host {
+  print("Hostname: " + host.name + " , Role: " + host.role)
+}
+
+# role が "dev" の要素のみにフィルターしてみる（index 番号は _ で捨てている）
+dev_servers = filter allowed_hosts as _, hosts {
+  hosts.role == "dev"
+}
+print(dev_servers)
+
+# JSON ファイル内で３番目の要素である httpbin.org へアクセスし、リクエストボディの Origin フィールドと付き合わせる
+resp = http.get("https://httpbin.org/get")
 r = json.unmarshal(resp.body)
 
-// フィールドを指定してアクセスしてみる
-print("Origin IP address is " + r.origin)
-
-// レスポンスボディのホストヘッダーが httpbin.org であることをチェックする
 rule_1 = rule {
-  r.headers.Host == "httpbin.org"
+  r.headers.Host == allowed_hosts[2].name
 }
 
 main = rule {
